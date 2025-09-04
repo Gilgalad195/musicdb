@@ -16,7 +16,7 @@ func InitDB(db *sql.DB) {
 		scripture_refs TEXT,
 		pdf_path TEXT,
 		lyric_sheet_path TEXT,
-		media_path TEXT,
+		media_path TEXT
 	);
 	`
 

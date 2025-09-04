@@ -32,10 +32,9 @@ func main() {
 			if len(lowerString) == 0 {
 				fmt.Println("Enter help if unsure of commands")
 			} else {
-				cmdInput := lowerString[0]
-				args := lowerString[1:]
+				cmdInput := lowerString
 				if command, exists := commands[cmdInput]; exists {
-					err := command.callback(args)
+					err := command.callback(dbConn)
 					if err != nil {
 						fmt.Println("Error:", err)
 					}
@@ -47,7 +46,7 @@ func main() {
 	}
 }
 
-func cleanInput(text string) []string {
+func cleanInput(text string) string {
 	cleanText := strings.Fields(strings.ToLower(text))
-	return cleanText
+	return cleanText[0]
 }

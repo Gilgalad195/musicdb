@@ -1,9 +1,11 @@
 package main
 
+import "database/sql"
+
 type cliCommand struct {
 	name        string
 	description string
-	callback    func([]string) error
+	callback    func(*sql.DB) error
 	//this is so the commands can receive and update the previous/next state.
 }
 
@@ -21,6 +23,16 @@ func init() {
 			name:        "help",
 			description: "Displays a help message",
 			callback:    commandHelp,
+		},
+		"add": {
+			name:        "add",
+			description: "adds a song to the database",
+			callback:    commandAdd,
+		},
+		"list": {
+			name:        "list",
+			description: "lists the songs in the database",
+			callback:    commandList,
 		},
 	}
 }
