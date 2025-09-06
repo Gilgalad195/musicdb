@@ -5,7 +5,7 @@ import "database/sql"
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(*sql.DB) error
+	callback    func(*sql.DB, []string) error
 	//this is so the commands can receive and update the previous/next state.
 }
 
@@ -33,6 +33,16 @@ func init() {
 			name:        "list",
 			description: "lists the songs in the database",
 			callback:    commandList,
+		},
+		"archive": {
+			name:        "archive",
+			description: "archives the song record",
+			callback:    commandArchive,
+		},
+		"unarchive": {
+			name:        "unarchive",
+			description: "unarchives the song record",
+			callback:    commandUnarchive,
 		},
 	}
 }

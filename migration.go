@@ -8,7 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const currentSchemaVersion = 2
+const currentSchemaVersion = 3
 
 func CheckForMigration(dbase *sql.DB) error {
 	dbVersion, err := db.GetSchemaVersion(dbase)
@@ -29,6 +29,6 @@ func CheckForMigration(dbase *sql.DB) error {
 }
 
 func runMigration(dbase *sql.DB) error {
-	_, err := dbase.Exec(`ALTER TABLE songs ADD COLUMN delete_date TEXT`)
+	_, err := dbase.Exec(`ALTER TABLE songs RENAME COLUMN delete_date TO archive_date`)
 	return err
 }
