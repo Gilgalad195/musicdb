@@ -23,6 +23,12 @@ func main() {
 
 	log.Println("Database initialized.")
 
+	if err := CheckForMigration(dbConn); err != nil {
+		fmt.Printf("error with migration: %v", err)
+		return
+	}
+	fmt.Println("Database version check complete.")
+
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Print("Music Database > ")
@@ -50,7 +56,3 @@ func cleanInput(text string) string {
 	cleanText := strings.Fields(strings.ToLower(text))
 	return cleanText[0]
 }
-
-//func migrationCheck(db *sql.DB) error {
-
-//}

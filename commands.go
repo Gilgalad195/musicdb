@@ -57,8 +57,8 @@ func commandAdd(db *sql.DB) error {
 	return nil
 }
 
-func commandList(db *sql.DB) error {
-	rows, err := db.Query("SELECT * FROM songs")
+func commandList(dbase *sql.DB) error {
+	rows, err := dbase.Query("SELECT id, title, composer, first_line, themes, scripture_refs, pdf_path, lyric_sheet_path, media_path FROM songs")
 	if err != nil {
 		return fmt.Errorf("error retrieving songs: %v", err)
 	}
