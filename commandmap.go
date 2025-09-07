@@ -44,5 +44,10 @@ func init() {
 			description: "unarchives the song record",
 			callback:    commandUnarchive,
 		},
+		"log": {
+			name:        "log",
+			description: "logs a performance for a song id",
+			callback:    commandLog,
+		},
 	}
 }

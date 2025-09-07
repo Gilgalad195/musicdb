@@ -20,6 +20,15 @@ const createSongsTableSQL = `
 	);
 `
 
+const createPerformancesTableSQL = `
+	CREATE TABLE IF NOT EXISTS performances (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		song_id INTEGER NOT NULL,
+		date TEXT NOT NULL,
+		FOREIGN KEY (song_id) REFERENCES songs(id)
+	);
+`
+
 const createMetaTableSQL = `
 	CREATE TABLE IF NOT EXISTS meta (
 		key TEXT PRIMARY KEY,
@@ -31,36 +40,44 @@ const initSchemaVersionSQL = `
 	INSERT OR IGNORE INTO meta (key, value) VALUES ('schema_version', 1);
 `
 
-func InitDB(db *sql.DB) {
-	if err := createSongsTable(db); err != nil {
+func InitDB(dbase *sql.DB) {
+	if err := createSongsTable(dbase); err != nil {
 		log.Fatalf("Failed to create songs table: %v", err)
 	}
-	if err := createMetaTable(db); err != nil {
+	if err := createPerformancesTable(dbase); err != nil {
+		log.Fatalf("Failed to create performances table: %v", err)
+	}
+	if err := createMetaTable(dbase); err != nil {
 		log.Fatalf("Failed to create meta table: %v", err)
 	}
-	if err := initSchemaVersion(db); err != nil {
+	if err := initSchemaVersion(dbase); err != nil {
 		log.Fatalf("Failed to initialize schema version: %v", err)
 	}
 	// further function calls to create tables
 }
 
-func createSongsTable(db *sql.DB) error {
-	_, err := db.Exec(createSongsTableSQL)
+func createSongsTable(dbase *sql.DB) error {
+	_, err := dbase.Exec(createSongsTableSQL)
 	return err
 }
 
-func createMetaTable(db *sql.DB) error {
-	_, err := db.Exec(createMetaTableSQL)
+func createPerformancesTable(dbase *sql.DB) error {
+	_, err := dbase.Exec(createPerformancesTableSQL)
 	return err
 }
 
-func initSchemaVersion(db *sql.DB) error {
-	_, err := db.Exec(initSchemaVersionSQL)
+func createMetaTable(dbase *sql.DB) error {
+	_, err := dbase.Exec(createMetaTableSQL)
 	return err
 }
 
-func GetSchemaVersion(db *sql.DB) (int, error) {
+func initSchemaVersion(dbase *sql.DB) error {
+	_, err := dbase.Exec(initSchemaVersionSQL)
+	return err
+}
+
+func GetSchemaVersion(dbase *sql.DB) (int, error) {
 	var version int
-	err := db.QueryRow(`SELECT value FROM meta WHERE key = 'schema_version'`).Scan(&version)
+	err := dbase.QueryRow(`SELECT value FROM meta WHERE key = 'schema_version'`).Scan(&version)
 	return version, err
 }

@@ -126,3 +126,35 @@ func commandUnarchive(dbase *sql.DB, _ []string) error {
 	fmt.Println("Song successfully unarchived")
 	return nil
 }
+
+func commandLog(dbase *sql.DB, args []string) error {
+	scanner := bufio.NewScanner(os.Stdin)
+	if len(args) > 0 && args[0] == "--del" {
+		perfIdString := prompt(scanner, "Enter the Performance ID to delete:")
+		perfId, err := strconv.Atoi(perfIdString)
+		if err != nil {
+			return fmt.Errorf("not a valid performance id: %v", err)
+		}
+		confirm := prompt(scanner, fmt.Sprintf("Are you sure you want to delete performance #%d? (y/n):", perfId))
+		if strings.ToLower(confirm) != "y" {
+			fmt.Println("Deletion cancelled.")
+			return nil
+		}
+		if _, err := dbase.Exec("DELETE FROM performances WHERE id = ?", perfId); err != nil {
+			return fmt.Errorf("error deleting performance: %v", err)
+		}
+		fmt.Println("Performance record deleted.")
+		return nil
+	}
+	songIdString := prompt(scanner, "Enter the Song ID to log:")
+	songId, err := strconv.Atoi(songIdString)
+	if err != nil {
+		return fmt.Errorf("not a valid song id: %v", err)
+	}
+	date := prompt(scanner, "Enter the performance date (YYYY-MM-DD):")
+	if _, err := dbase.Exec("INSERT INTO performances (song_id, date) VALUES (?, ?)", songId, date); err != nil {
+		return fmt.Errorf("error adding song: %v", err)
+	}
+	fmt.Printf("Song Id %d logged for %s\n", songId, date)
+	return nil
+}
