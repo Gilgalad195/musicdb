@@ -8,7 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const currentSchemaVersion = 3
+const currentSchemaVersion = 1
 
 func CheckForMigration(dbase *sql.DB) error {
 	dbVersion, err := db.GetSchemaVersion(dbase)

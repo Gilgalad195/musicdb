@@ -11,12 +11,10 @@ const createSongsTableSQL = `
 		title TEXT NOT NULL,
 		composer TEXT,
 		first_line TEXT,
-		themes TEXT,
-		scripture_refs TEXT,
 		pdf_path TEXT,
 		lyric_sheet_path TEXT,
 		media_path TEXT,
-		delete_date TEXT
+		archive_date TEXT
 	);
 `
 
@@ -26,6 +24,23 @@ const createPerformancesTableSQL = `
 		song_id INTEGER NOT NULL,
 		date TEXT NOT NULL,
 		FOREIGN KEY (song_id) REFERENCES songs(id)
+	);
+`
+
+const createThemesTableSQL = `
+	CREATE TABLE IF NOT EXISTS themes (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		name TEXT NOT NULL
+	);
+`
+
+const createSongThemeTableSQL = `
+	CREATE TABLE IF NOT EXISTS song_theme (
+		song_id INTEGER NOT NULL,
+		theme_id INTEGER NOT NULL,
+		FOREIGN KEY (song_id) REFERENCES songs(id),
+		FOREIGN KEY (theme_id) REFERENCES themes(id),
+		PRIMARY KEY (song_id, theme_id)
 	);
 `
 
@@ -47,6 +62,12 @@ func InitDB(dbase *sql.DB) {
 	if err := createPerformancesTable(dbase); err != nil {
 		log.Fatalf("Failed to create performances table: %v", err)
 	}
+	if err := createThemesTable(dbase); err != nil {
+		log.Fatalf("Failed to create themes table: %v", err)
+	}
+	if err := createSongThemeTable(dbase); err != nil {
+		log.Fatalf("Failed to create song_theme table: %v", err)
+	}
 	if err := createMetaTable(dbase); err != nil {
 		log.Fatalf("Failed to create meta table: %v", err)
 	}
@@ -63,6 +84,16 @@ func createSongsTable(dbase *sql.DB) error {
 
 func createPerformancesTable(dbase *sql.DB) error {
 	_, err := dbase.Exec(createPerformancesTableSQL)
+	return err
+}
+
+func createThemesTable(dbase *sql.DB) error {
+	_, err := dbase.Exec(createThemesTableSQL)
+	return err
+}
+
+func createSongThemeTable(dbase *sql.DB) error {
+	_, err := dbase.Exec(createSongThemeTableSQL)
 	return err
 }
 

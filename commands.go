@@ -59,9 +59,10 @@ func commandAdd(db *sql.DB, _ []string) error {
 	return nil
 }
 
+// need to update this to list performance data with --log
 func commandList(dbase *sql.DB, args []string) error {
 	includeArchived := len(args) > 0 && args[0] == "--admin"
-	query := `SELECT id, title, composer, first_line, themes, scripture_refs, pdf_path, lyric_sheet_path, media_path, archive_date FROM songs`
+	query := `SELECT id, title, composer, first_line, pdf_path, lyric_sheet_path, media_path, archive_date FROM songs`
 	if !includeArchived {
 		query += " WHERE archive_date IS NULL"
 	}
@@ -77,19 +78,17 @@ func commandList(dbase *sql.DB, args []string) error {
 			title            string
 			composer         sql.NullString
 			first_line       sql.NullString
-			themes           sql.NullString
-			scripture_refs   sql.NullString
 			pdf_path         sql.NullString
 			lyric_sheet_path sql.NullString
 			media_path       sql.NullString
 			archive_date     sql.NullString
 		)
-		err := rows.Scan(&id, &title, &composer, &first_line, &themes, &scripture_refs, &pdf_path, &lyric_sheet_path, &media_path, &archive_date)
+		err := rows.Scan(&id, &title, &composer, &first_line, &pdf_path, &lyric_sheet_path, &media_path, &archive_date)
 		if err != nil {
 			return fmt.Errorf("error scanning row: %v", err)
 		}
-		fmt.Printf("ID: %d\nTitle: %s\nComposer: %s\nFirst Line: %s\nThemes: %s\nScripture Refs: %s\nPDF: %s\nLyric Sheet: %s\nMedia: %s\n",
-			id, title, nullToString(composer), nullToString(first_line), nullToString(themes), nullToString(scripture_refs), nullToString(pdf_path), nullToString(lyric_sheet_path), nullToString(media_path))
+		fmt.Printf("ID: %d\nTitle: %s\nComposer: %s\nFirst Line: %s\nPDF: %s\nLyric Sheet: %s\nMedia: %s\n",
+			id, title, nullToString(composer), nullToString(first_line), nullToString(pdf_path), nullToString(lyric_sheet_path), nullToString(media_path))
 		if includeArchived {
 			fmt.Printf("Archive Date: %s\n", nullToString(archive_date))
 		}
